@@ -1,11 +1,14 @@
-from pathlib import Path
 import shutil
-from fastapi import APIRouter, UploadFile, File
+
+from fastapi import APIRouter, File, UploadFile
 
 from app.core.config import UPLOAD_DIR
 from app.services.ingestion_service import IngestionService
 
-router = APIRouter(prefix="/api/v1/upload", tags=["Upload"])
+router = APIRouter(
+    prefix="/api/v1/upload",
+    tags=["Upload"],
+)
 
 service = IngestionService()
 
@@ -18,6 +21,4 @@ async def upload_pdf(file: UploadFile = File(...)):
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    document = service.ingest_pdf(file_path)
-
-    return document
+    return service.ingest_pdf(file_path)
