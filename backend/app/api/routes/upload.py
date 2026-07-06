@@ -22,3 +22,13 @@ async def upload_pdf(file: UploadFile = File(...)):
         shutil.copyfileobj(file.file, buffer)
 
     return service.ingest_pdf(file_path)
+
+@router.post("/image")
+async def upload_image(file: UploadFile = File(...)):
+
+    file_path = UPLOAD_DIR / file.filename
+
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    return service.ingest_image(file_path)

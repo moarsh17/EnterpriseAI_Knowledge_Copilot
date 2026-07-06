@@ -1,12 +1,12 @@
 from app.core.logging import logger
+from app.core.rag_engine import RAGEngine
 from app.models.chat import ChatResponse, Source
-from app.rag.chain import RAGChain
 
 
 class ChatService:
 
     def __init__(self):
-        self.chain = RAGChain()
+        self.chain = RAGEngine.get_instance()
 
     def ask(self, question: str):
 
