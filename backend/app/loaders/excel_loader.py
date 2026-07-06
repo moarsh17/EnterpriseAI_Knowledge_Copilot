@@ -1,0 +1,39 @@
+from pathlib import Path
+from uuid import uuid4
+
+import pandas as pd
+
+from app.models.document import Document, Page
+
+
+class ExcelLoader:
+
+    def load(self, excel_path: Path) -> Document:
+
+        workbook = pd.read_excel(
+            excel_path,
+            sheet_name=None
+        )
+
+        pages = []
+
+        for index, (sheet, dataframe) in enumerate(workbook.items(), start=1):
+
+            text = dataframe.to_string(index=False)
+
+            pages.append(
+                Page(
+                    page_number=index,
+                    text=f"Sheet: {sheet}\n\n{text}"
+                )
+            )
+
+        return Document(
+            document_id=str(uuid4()),
+            filename=excel_path.name,
+            total_pages=len(pages),
+            metadata={
+                "type": "excel"
+            },
+            pages=pages
+        )

@@ -32,3 +32,23 @@ async def upload_image(file: UploadFile = File(...)):
         shutil.copyfileobj(file.file, buffer)
 
     return service.ingest_image(file_path)
+
+@router.post("/docx")
+async def upload_docx(file: UploadFile = File(...)):
+
+    file_path = UPLOAD_DIR / file.filename
+
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    return service.ingest_docx(file_path)
+
+@router.post("/excel")
+async def upload_excel(file: UploadFile = File(...)):
+
+    file_path = UPLOAD_DIR / file.filename
+
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    return service.ingest_excel(file_path)
