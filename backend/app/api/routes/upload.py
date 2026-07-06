@@ -1,54 +1,29 @@
-import shutil
+from fastapi import APIRouter, File, HTTPException, UploadFile
 
-from fastapi import APIRouter, File, UploadFile
-
-from app.core.config import UPLOAD_DIR
 from app.services.ingestion_service import IngestionService
+from app.services.upload_service import UploadService
 
 router = APIRouter(
     prefix="/api/v1/upload",
     tags=["Upload"],
 )
 
-service = IngestionService()
+upload_service = UploadService()
+ingestion_service = IngestionService()
 
 
-@router.post("/pdf")
-async def upload_pdf(file: UploadFile = File(...)):
+@router.post("/")
+async def upload(file: UploadFile = File(...)):
 
-    file_path = UPLOAD_DIR / file.filename
+    try:
 
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+        file_path = await upload_service.save_file(file)
 
-    return service.ingest_pdf(file_path)
+        return ingestion_service.ingest(file_path)
 
-@router.post("/image")
-async def upload_image(file: UploadFile = File(...)):
+    except ValueError as e:
 
-    file_path = UPLOAD_DIR / file.filename
-
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-
-    return service.ingest_image(file_path)
-
-@router.post("/docx")
-async def upload_docx(file: UploadFile = File(...)):
-
-    file_path = UPLOAD_DIR / file.filename
-
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-
-    return service.ingest_docx(file_path)
-
-@router.post("/excel")
-async def upload_excel(file: UploadFile = File(...)):
-
-    file_path = UPLOAD_DIR / file.filename
-
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-
-    return service.ingest_excel(file_path)
+        raise HTTPException(
+            status_code=400,
+            detail=str(e),
+        )

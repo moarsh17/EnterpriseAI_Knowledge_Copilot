@@ -12,5 +12,16 @@ service = ChatService()
 
 
 @router.get("/", response_model=ChatResponse)
-def chat(question: str):
-    return service.ask(question)
+def chat(
+    question: str,
+    domain: str | None = None,
+    department: str | None = None,
+    document_type: str | None = None,
+):
+
+    return service.ask(
+        question=question,
+        domain=domain,
+        department=department,
+        document_type=document_type,
+    )

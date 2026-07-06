@@ -41,6 +41,9 @@ class DocumentSplitter:
                             "filename": document.filename,
                             "page": page.page_number,
                             "chunk_index": index,
+                            "domain": document.domain,
+                            "department": document.department,
+                            "document_type": document.document_type,
                             **document.metadata,
                         },
                     )

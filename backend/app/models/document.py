@@ -1,5 +1,6 @@
 from datetime import datetime
-from typing import List
+from typing import Any
+
 from pydantic import BaseModel, Field
 
 
@@ -10,8 +11,21 @@ class Page(BaseModel):
 
 class Document(BaseModel):
     document_id: str
+
     filename: str
+
     total_pages: int
+
     uploaded_at: datetime = Field(default_factory=datetime.utcnow)
-    metadata: dict = Field(default_factory=dict)
-    pages: List[Page]
+
+    domain: str = "General"
+
+    department: str = "General"
+
+    document_type: str = "Unknown"
+
+    tags: list[str] = Field(default_factory=list)
+
+    metadata: dict[str, Any] = Field(default_factory=dict)
+
+    pages: list[Page]

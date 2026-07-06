@@ -15,22 +15,30 @@ class RAGChain:
             temperature=0,
         )
 
-        self.retriever = DocumentRetriever().get_retriever()
+        self.prompt = RAG_PROMPT
 
-        self.document_chain = create_stuff_documents_chain(
+    def invoke(
+        self,
+        question: str,
+        filters: dict | None = None,
+    ):
+
+        retriever = DocumentRetriever().get_retriever(
+            filters=filters,
+        )
+
+        document_chain = create_stuff_documents_chain(
             self.llm,
-            RAG_PROMPT,
+            self.prompt,
         )
 
-        self.chain = create_retrieval_chain(
-            self.retriever,
-            self.document_chain,
+        chain = create_retrieval_chain(
+            retriever,
+            document_chain,
         )
 
-    def invoke(self, question: str):
-
-        return self.chain.invoke(
+        return chain.invoke(
             {
-                "input": question
+                "input": question,
             }
         )

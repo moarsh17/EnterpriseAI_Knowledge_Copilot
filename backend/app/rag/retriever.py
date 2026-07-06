@@ -13,18 +13,34 @@ class DocumentRetriever:
             embedding_function=get_embedding_model(),
         )
 
-    def get_retriever(self, k: int = 4):
+    def get_retriever(
+        self,
+        k: int = 4,
+        filters: dict | None = None,
+    ):
+
+        kwargs = {
+            "k": k,
+        }
+
+        if filters:
+            kwargs["filter"] = filters
 
         return self.vectorstore.as_retriever(
             search_type="mmr",
-            search_kwargs={
-                "k": 4,
-                "fetch_k": 10,
-            },
+            search_kwargs=kwargs,
         )
 
-    def retrieve(self, query: str, k: int = 4):
+    def retrieve(
+        self,
+        query: str,
+        k: int = 4,
+        filters: dict | None = None,
+    ):
 
-        retriever = self.get_retriever(k)
+        retriever = self.get_retriever(
+            k=k,
+            filters=filters,
+        )
 
         return retriever.invoke(query)
