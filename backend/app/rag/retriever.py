@@ -1,5 +1,7 @@
+from langchain.retrievers import EnsembleRetriever
 from langchain_chroma import Chroma
 
+from app.rag.bm25 import BM25Search
 from app.rag.embeddings import get_embedding_model
 from app.rag.vectorstore import VECTOR_DB
 
@@ -15,32 +17,30 @@ class DocumentRetriever:
 
     def get_retriever(
         self,
-        k: int = 4,
-        filters: dict | None = None,
+        filters=None,
     ):
 
         kwargs = {
-            "k": k,
+            "k": 4,
         }
 
         if filters:
             kwargs["filter"] = filters
 
-        return self.vectorstore.as_retriever(
+        vector = self.vectorstore.as_retriever(
             search_type="mmr",
             search_kwargs=kwargs,
         )
 
-    def retrieve(
-        self,
-        query: str,
-        k: int = 4,
-        filters: dict | None = None,
-    ):
+        bm25 = BM25Search().get()
 
-        retriever = self.get_retriever(
-            k=k,
-            filters=filters,
+        return EnsembleRetriever(
+            retrievers=[
+                vector,
+                bm25,
+            ],
+            weights=[
+                0.7,
+                0.3,
+            ],
         )
-
-        return retriever.invoke(query)

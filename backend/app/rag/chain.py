@@ -1,9 +1,11 @@
+from app.models import response
 from langchain.chains import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_ollama import ChatOllama
 
 from app.rag.prompts import RAG_PROMPT
 from app.rag.retriever import DocumentRetriever
+from app.rag.memory import memory
 
 
 class RAGChain:
@@ -37,8 +39,16 @@ class RAGChain:
             document_chain,
         )
 
-        return chain.invoke(
+        response = chain.invoke(
             {
                 "input": question,
+                "chat_history": memory.load_memory_variables({})["chat_history"],
             }
         )
+
+        memory.save_context(
+            {"input": question},
+            {"output": response["answer"]},
+        )
+
+        return response
