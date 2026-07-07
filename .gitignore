@@ -9,3 +9,6 @@ __pycache__/
 env/
 venv/
 ENV/
+
+node_modules/
+.next/

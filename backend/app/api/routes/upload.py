@@ -1,3 +1,4 @@
+from typing import List
 from fastapi import APIRouter, File, HTTPException, UploadFile
 
 from app.services.ingestion_service import IngestionService
@@ -13,17 +14,27 @@ ingestion_service = IngestionService()
 
 
 @router.post("/")
-async def upload(file: UploadFile = File(...)):
+async def upload(files: List[UploadFile] = File(...)):
+    results = []
+    errors = []
 
-    try:
+    for file in files:
+        try:
+            file_path = await upload_service.save_file(file)
+            result = ingestion_service.ingest(file_path)
+            results.append({
+                "filename": file.filename,
+                "status": "success",
+                "details": result
+            })
+        except Exception as e:
+            errors.append({
+                "filename": file.filename,
+                "status": "error",
+                "detail": str(e)
+            })
 
-        file_path = await upload_service.save_file(file)
-
-        return ingestion_service.ingest(file_path)
-
-    except ValueError as e:
-
-        raise HTTPException(
-            status_code=400,
-            detail=str(e),
-        )
+    return {
+        "results": results,
+        "errors": errors
+    }
