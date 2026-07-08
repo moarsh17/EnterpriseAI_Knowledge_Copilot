@@ -2,7 +2,9 @@
 
 import React, { useState, useEffect } from "react";
 import { api } from "@/services/api";
-import { UploadCloud, CheckCircle, AlertCircle, FileText, BookOpen, Trash2, Loader2 } from "lucide-react";
+import { UploadCloud, CheckCircle, AlertCircle, FileText, BookOpen, Trash2, Loader2, Sun, Moon } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useTheme } from "next-themes";
 
 export default function Sidebar() {
   const [uploading, setUploading] = useState(false);
@@ -11,6 +13,13 @@ export default function Sidebar() {
   
   const [documents, setDocuments] = useState<any[]>([]);
   const [loadingDocs, setLoadingDocs] = useState(true);
+
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const fetchDocuments = async () => {
     setLoadingDocs(true);
@@ -60,22 +69,32 @@ export default function Sidebar() {
   };
 
   return (
-    <div className="w-72 h-full flex flex-col bg-white border-r border-slate-200 dark:bg-slate-900 dark:border-slate-800 shadow-sm z-10 transition-colors duration-300">
+    <div className="w-72 h-full flex flex-col bg-background border-r border-border shadow-none z-10 transition-colors duration-300">
       {/* Brand Header */}
-      <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center gap-3 shrink-0">
-        <div className="w-10 h-10 rounded bg-[#C00F2E] flex items-center justify-center shadow-md shrink-0">
-          <BookOpen className="text-[#F3B229] w-6 h-6" />
+      <div className="p-6 flex items-center justify-between shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-lg bg-[#C00F2E] flex items-center justify-center shadow-lg shrink-0">
+            <BookOpen className="text-[#F3B229] w-5 h-5" />
+          </div>
+          <div>
+            <h1 className="font-bold text-lg text-foreground tracking-tight leading-none">ONGC</h1>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-widest mt-1">Copilot</p>
+          </div>
         </div>
-        <div>
-          <h1 className="font-bold text-lg text-slate-900 dark:text-white leading-tight">ONGC</h1>
-          <p className="text-xs text-slate-500 font-medium">Knowledge Copilot</p>
-        </div>
+        {mounted && (
+          <button
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            className="p-2 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+          >
+            {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+          </button>
+        )}
       </div>
 
       {/* Navigation / Upload Area */}
-      <div className="flex-1 p-4 flex flex-col gap-6 overflow-y-auto">
+      <div className="flex-1 px-6 pb-6 flex flex-col gap-8 overflow-y-auto">
         <div>
-          <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Knowledge Base</h2>
+          <h2 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-3">Knowledge Base</h2>
           
           <div className="relative group cursor-pointer">
             <input
@@ -86,33 +105,33 @@ export default function Sidebar() {
               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed z-10"
               accept=".pdf,.png,.jpg,.jpeg,.bmp,.tiff,.docx,.xlsx,.xls,.txt,.csv,.pptx"
             />
-            <div className={`p-4 rounded-xl border-2 border-dashed flex flex-col items-center justify-center gap-2 text-center transition-all duration-300 ${
-              uploading ? "border-slate-300 bg-slate-50 dark:border-slate-700 dark:bg-slate-800" :
-              uploadStatus === "success" ? "border-emerald-400 bg-emerald-50 dark:bg-emerald-900/20" :
-              uploadStatus === "error" ? "border-rose-400 bg-rose-50 dark:bg-rose-900/20" :
-              "border-slate-200 bg-slate-50 group-hover:border-[#F3B229] group-hover:bg-[#F3B229]/5 dark:border-slate-800 dark:bg-slate-900"
+            <div className={`p-4 rounded-xl border border-dashed flex flex-col items-center justify-center gap-2 text-center transition-all duration-300 ${
+              uploading ? "border-muted bg-muted/50" :
+              uploadStatus === "success" ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" :
+              uploadStatus === "error" ? "border-rose-500/50 bg-rose-500/10 text-rose-600 dark:text-rose-400" :
+              "border-border bg-muted/30 group-hover:border-[#F3B229]/50 group-hover:bg-[#F3B229]/5"
             }`}>
               {uploading ? (
-                <div className="w-6 h-6 border-2 border-[#C00F2E] border-t-transparent rounded-full animate-spin" />
+                <div className="w-5 h-5 border-2 border-[#C00F2E] border-t-transparent rounded-full animate-spin" />
               ) : uploadStatus === "success" ? (
-                <CheckCircle className="w-6 h-6 text-emerald-500" />
+                <CheckCircle className="w-5 h-5" />
               ) : uploadStatus === "error" ? (
-                <AlertCircle className="w-6 h-6 text-rose-500" />
+                <AlertCircle className="w-5 h-5" />
               ) : (
-                <UploadCloud className="w-6 h-6 text-slate-400 group-hover:text-[#F3B229] transition-colors" />
+                <UploadCloud className="w-5 h-5 text-muted-foreground group-hover:text-[#F3B229] transition-colors" />
               )}
               
-              <div className="text-sm">
+              <div className="text-xs">
                 {uploading ? (
-                  <span className="text-slate-600 dark:text-slate-400 font-medium">Ingesting...</span>
+                  <span className="text-muted-foreground font-medium">Ingesting...</span>
                 ) : uploadStatus === "success" ? (
-                  <span className="text-emerald-600 font-medium">Upload Complete!</span>
+                  <span className="font-medium">Upload Complete!</span>
                 ) : uploadStatus === "error" ? (
-                  <span className="text-rose-600 font-medium text-xs">{errorMessage}</span>
+                  <span className="font-medium">{errorMessage}</span>
                 ) : (
                   <>
-                    <span className="font-semibold text-slate-700 dark:text-slate-300">Click to upload</span>
-                    <p className="text-xs text-slate-400 mt-1">PDF, DOCX, Excel, Images</p>
+                    <span className="font-medium text-foreground">Click to upload</span>
+                    <p className="text-[10px] text-muted-foreground mt-1">PDF, DOCX, Excel, Images</p>
                   </>
                 )}
               </div>
@@ -121,43 +140,52 @@ export default function Sidebar() {
         </div>
 
         <div className="flex-1 flex flex-col min-h-0">
-          <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Uploaded Documents</h2>
+          <h2 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-3">Uploaded Documents</h2>
           
-          <div className="flex-1 overflow-y-auto pr-1 space-y-2">
+          <div className="flex-1 overflow-y-auto pr-1 space-y-1">
             {loadingDocs ? (
               <div className="flex justify-center items-center py-4">
-                <Loader2 className="w-5 h-5 animate-spin text-slate-400" />
+                <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
               </div>
             ) : documents.length === 0 ? (
-              <div className="text-sm text-slate-500 text-center py-4">
+              <div className="text-xs text-muted-foreground text-center py-4">
                 No documents uploaded yet.
               </div>
             ) : (
-              documents.map((doc, idx) => (
-                <div key={idx} className="flex items-center justify-between p-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 group">
-                  <div className="flex items-center gap-2 overflow-hidden">
-                    <FileText className="w-4 h-4 text-slate-400 shrink-0" />
-                    <span className="text-sm text-slate-700 dark:text-slate-300 truncate" title={doc.filename}>
-                      {doc.filename}
-                    </span>
-                  </div>
-                  <button 
-                    onClick={() => handleDeleteDocument(doc.document_id)}
-                    className="p-1.5 text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/30 rounded-md transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
-                    title="Remove document"
+              <AnimatePresence>
+                {documents.map((doc, idx) => (
+                  <motion.div 
+                    key={doc.document_id}
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.2, delay: idx * 0.05 }}
+                    className="flex items-center justify-between p-2 rounded-lg hover:bg-muted group transition-colors"
                   >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              ))
+                    <div className="flex items-center gap-2 overflow-hidden">
+                      <FileText className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                      <span className="text-xs text-foreground truncate font-medium" title={doc.filename}>
+                        {doc.filename}
+                      </span>
+                    </div>
+                    <button 
+                      onClick={() => handleDeleteDocument(doc.document_id)}
+                      className="p-1.5 text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 rounded-md transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
+                      title="Remove document"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </button>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
             )}
           </div>
         </div>
       </div>
       
       {/* Footer */}
-      <div className="p-4 border-t border-slate-200 dark:border-slate-800 text-xs text-slate-500 text-center shrink-0">
-        Powered by AI &bull; Internal Use Only
+      <div className="p-6 text-[10px] text-muted-foreground text-center shrink-0 uppercase tracking-widest font-medium">
+        Internal Use Only
       </div>
     </div>
   );

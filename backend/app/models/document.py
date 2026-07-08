@@ -7,6 +7,10 @@ from pydantic import BaseModel, Field
 class Page(BaseModel):
     page_number: int
     text: str
+    ocr_used: bool = False
+    tables_detected: int = 0
+    images_detected: int = 0
+    processing_timestamp: datetime = Field(default_factory=datetime.utcnow)
 
 
 class Document(BaseModel):

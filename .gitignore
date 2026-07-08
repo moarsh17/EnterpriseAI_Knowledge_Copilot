@@ -12,3 +12,5 @@ ENV/
 
 node_modules/
 .next/
+
+.webui_secret_key

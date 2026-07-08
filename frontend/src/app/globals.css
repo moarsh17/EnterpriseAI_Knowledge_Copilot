@@ -3,8 +3,11 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
   
-  /* ONGC Theme Colors */
+  /* ONGC Theme Colors - refined for minimal aesthetic */
   --color-ongc-red: #C00F2E;
   --color-ongc-red-dark: #910B23;
   --color-ongc-red-light: #E01B3F;
@@ -16,15 +19,21 @@
 }
 
 :root {
-  --background: #f8fafc; /* light slate */
-  --foreground: #0f172a; /* dark slate */
+  /* Light Mode (default) */
+  --background: #ffffff;
+  --foreground: #09090b; /* zinc-950 */
+  --muted: #f4f4f5;      /* zinc-100 */
+  --muted-foreground: #71717a; /* zinc-500 */
+  --border: #e4e4e7;     /* zinc-200 */
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #020617; /* slate 950 */
-    --foreground: #f8fafc; /* slate 50 */
-  }
+.dark {
+  /* Dark Mode */
+  --background: #09090b; /* zinc-950 */
+  --foreground: #fafafa; /* zinc-50 */
+  --muted: #27272a;      /* zinc-800 */
+  --muted-foreground: #a1a1aa; /* zinc-400 */
+  --border: #27272a;     /* zinc-800 */
 }
 
 body {
@@ -36,39 +45,33 @@ body {
   height: 100vh;
   display: flex;
   flex-direction: column;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Custom scrollbar for webkit */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
   background: transparent; 
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1; 
+  background: var(--border); 
   border-radius: 4px;
 }
-@media (prefers-color-scheme: dark) {
-  ::-webkit-scrollbar-thumb {
-    background: #334155; 
-  }
-}
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8; 
+  background: var(--muted-foreground); 
 }
 
 /* Utility for glassmorphism */
 .glass {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
 }
-@media (prefers-color-scheme: dark) {
-  .glass {
-    background: rgba(15, 23, 42, 0.7);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
+.dark .glass {
+  background: rgba(9, 9, 11, 0.6);
+  border: 1px solid var(--border);
 }

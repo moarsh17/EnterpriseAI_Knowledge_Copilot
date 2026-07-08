@@ -11,9 +11,13 @@ class BM25Search:
 
         docs = vectorstore.get()
 
-        texts = docs["documents"]
+        texts = docs.get("documents", [])
 
-        metadatas = docs["metadatas"]
+        if not texts:
+            self.retriever = None
+            return
+
+        metadatas = docs.get("metadatas", [])
 
         from langchain_core.documents import Document
 

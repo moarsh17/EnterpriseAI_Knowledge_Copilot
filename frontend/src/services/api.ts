@@ -13,21 +13,21 @@ export interface ChatResponse {
 }
 
 export const api = {
-  uploadFiles: async (files: File[]): Promise<any> => {
-    const formData = new FormData();
-    files.forEach(file => formData.append("files", file));
+  uploadFiles: async (files: File[]): Promise<any[]> => {
+    const results = [];
+    for (const file of files) {
+      const formData = new FormData();
+      formData.append("file", file);
 
-    const res = await fetch(`${BASE_URL}/upload/`, {
-      method: "POST",
-      body: formData,
-    });
+      const res = await fetch(`${BASE_URL}/upload/`, {
+        method: "POST",
+        body: formData,
+      });
 
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.detail || "Upload failed");
+      const json = await res.json().catch(() => ({}));
+      results.push(json);
     }
-
-    return res.json();
+    return results;
   },
 
   chat: async (

@@ -34,6 +34,9 @@ class DocumentRetriever:
 
         bm25 = BM25Search().get()
 
+        if bm25 is None:
+            return vector
+
         return EnsembleRetriever(
             retrievers=[
                 vector,
