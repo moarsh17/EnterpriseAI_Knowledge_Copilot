@@ -11,6 +11,7 @@ class Page(BaseModel):
     tables_detected: int = 0
     images_detected: int = 0
     processing_timestamp: datetime = Field(default_factory=datetime.utcnow)
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class Document(BaseModel):

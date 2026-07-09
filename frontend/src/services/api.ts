@@ -4,6 +4,10 @@ export interface Source {
   filename: string;
   page: number;
   chunk_index: number;
+  source_type?: string;
+  repository_name?: string;
+  file_path?: string;
+  repository_url?: string;
 }
 
 export interface ChatResponse {
@@ -72,6 +76,41 @@ export const api = {
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
       throw new Error(err.detail || "Failed to delete document");
+    }
+    return res.json();
+  },
+
+  ingestGithub: async (repoUrl: string): Promise<any> => {
+    const res = await fetch(`${BASE_URL}/github/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ repo_url: repoUrl }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || "Failed to ingest repository");
+    }
+    return res.json();
+  },
+
+  getGithubRepos: async (): Promise<any> => {
+    const res = await fetch(`${BASE_URL}/github/`);
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || "Failed to fetch repositories");
+    }
+    return res.json();
+  },
+
+  deleteGithubRepo: async (repoId: string): Promise<any> => {
+    const res = await fetch(`${BASE_URL}/github/${repoId}`, {
+      method: "DELETE",
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || "Failed to delete repository");
     }
     return res.json();
   },

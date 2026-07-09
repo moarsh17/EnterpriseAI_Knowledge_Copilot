@@ -111,7 +111,7 @@ class RAGIngestionPipeline:
                 # Build per-page metadata dict
                 page_metadata = {
                     "document_id": document_id,
-                    "filename": filename,
+                    "filename": page.metadata.get("filename", filename),
                     "page": page.page_number,
                     "chunk_index": 0,            # overwritten in _split_page
                     "domain": domain,
@@ -122,6 +122,7 @@ class RAGIngestionPipeline:
                     "images_detected": page.images_detected,
                     "processing_timestamp": page.processing_timestamp.isoformat(),
                     **extra_metadata,
+                    **page.metadata,
                 }
 
                 # Chunk and store immediately
@@ -168,7 +169,9 @@ class RAGIngestionPipeline:
         if not page.text.strip():
             return 0
 
-        chunks = self.splitter.splitter.split_text(page.text)
+        filename = base_metadata.get("filename", "")
+        splitter = self.splitter._get_splitter_for_filename(filename)
+        chunks = splitter.split_text(page.text)
         lc_docs: list[LangchainDocument] = []
 
         for i, chunk_text in enumerate(chunks):

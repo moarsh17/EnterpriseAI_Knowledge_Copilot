@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from app.api.routes.upload import router as upload_router
 from app.api.routes.chat import router as chat_router
 from app.api.routes.documents import router as documents_router
+from app.api.routes.github import router as github_router
 from app.core.rag_engine import RAGEngine
 
 RAGEngine.get_instance()
@@ -25,6 +26,7 @@ app.add_middleware(
 app.include_router(upload_router)
 app.include_router(chat_router)
 app.include_router(documents_router)
+app.include_router(github_router)
 
 
 @app.get("/")

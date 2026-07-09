@@ -1,10 +1,15 @@
 from pydantic import BaseModel
+from typing import Optional
 
 
 class Source(BaseModel):
     filename: str
     page: int
     chunk_index: int
+    source_type: Optional[str] = None
+    repository_name: Optional[str] = None
+    file_path: Optional[str] = None
+    repository_url: Optional[str] = None
 
 
 class ChatResponse(BaseModel):

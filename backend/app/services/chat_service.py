@@ -41,9 +41,13 @@ class ChatService:
 
             sources.append(
                 Source(
-                    filename=doc.metadata["filename"],
-                    page=doc.metadata["page"],
-                    chunk_index=doc.metadata["chunk_index"],
+                    filename=doc.metadata.get("filename", ""),
+                    page=doc.metadata.get("page", 1),
+                    chunk_index=doc.metadata.get("chunk_index", 0),
+                    source_type=doc.metadata.get("source_type"),
+                    repository_name=doc.metadata.get("repository_name"),
+                    file_path=doc.metadata.get("file_path"),
+                    repository_url=doc.metadata.get("repository_url")
                 )
             )
 
