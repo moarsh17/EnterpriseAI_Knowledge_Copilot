@@ -29,8 +29,49 @@ In large enterprises like ONGC, institutional knowledge is often locked within m
 - **Rich Document Metadata**: Extracts and tags documents with metadata (Domain, Department, Document Type) to enable highly filtered and precise semantic searches.
 - **Document Management UI**: Drag-and-drop multiple files at once. A dynamic sidebar lists all active documents in the knowledge base, allowing for easy one-click removal and instant index syncing.
 - **Conversational Memory**: The chat interface remembers the context of the conversation, allowing for natural follow-up questions.
-- **Multi-Format Support**: Natively processes PDFs, DOCX, Excel spreadsheets, and raw Images (PNG/JPG).
+- **Multi-Format Support**: Natively processes PDFs, DOCX, Excel spreadsheets, raw Images (PNG/JPG), and **Public GitHub Repositories** (clones and indexes source code).
 - **Premium ONGC-Branded Interface**: A modern, sleek Next.js App Router frontend customized with ONGC's deep maroon and gold brand colors, utilizing glassmorphism and micro-animations for a premium feel.
+
+## How It Works (The Full Flow)
+
+### 1. Ingestion Pipeline
+- **Upload & Intake**: Users upload documents (PDF, DOCX, Excel, Images) via drag-and-drop or provide a public **GitHub repository URL**.
+- **Specialized Loaders**: Files are routed to specific loaders. For massive PDFs, pages are streamed one-by-one to prevent memory overload. GitHub repositories are cloned, and relevant code files (Python, TS/JS, Go, Java, etc.) are extracted.
+- **Intelligent Chunking**: Text and code are broken down into semantic chunks. Code files utilize language-specific splitters to respect function and class boundaries.
+- **OCR & Data Extraction**: For scanned pages and images, Tesseract-OCR and OpenCV are used. Tables are parsed and converted to key-value pairs.
+- **Embedding & Storage**: Chunks are embedded using a local embedding model (e.g., `nomic-embed-text`) and stored in a persistent **ChromaDB** vector database along with rich metadata (document ID, filename, repository name, chunk index).
+
+### 2. Retrieval & Chat Pipeline
+- **Querying**: The user asks a natural language question in the chat interface.
+- **Hybrid Search**: The question is embedded, and the system performs a search against the vector database (semantic search) and BM25 (keyword search) to retrieve the most relevant chunks across all indexed documents and repositories.
+- **Contextual Generation**: The retrieved chunks and conversation history are combined into a strict prompt. The prompt is sent to a local Large Language Model (e.g., `llama3.2:3b` via Ollama).
+- **Grounded Answer**: The LLM generates a concise, accurate answer strictly constrained to the provided context.
+- **Citations**: The frontend displays the answer alongside direct citations indicating exactly which document, page, or GitHub file the information was sourced from.
+
+## Tech Stack
+
+**Frontend**
+- Next.js (App Router), React, TypeScript
+- Tailwind CSS (Styling), Framer Motion (Animations)
+- Lucide React (Icons)
+
+**Backend**
+- Python, FastAPI (REST API)
+- LangChain (RAG orchestration, Prompting)
+- GitPython (Repository cloning)
+
+**AI & Machine Learning**
+- Ollama (Local model execution)
+- LLM: `llama3.2:3b` (default for generation)
+- Embeddings: `nomic-embed-text` (default for vectorization)
+
+**Database & Storage**
+- ChromaDB (Persistent local vector database)
+
+**Document Processing Engine**
+- PyMuPDF (`fitz`), pdfplumber (PDFs and tables)
+- OpenCV, Tesseract-OCR (Image processing and OCR)
+- `python-docx`, `openpyxl` (Office documents)
 
 ## Project Structure
 
