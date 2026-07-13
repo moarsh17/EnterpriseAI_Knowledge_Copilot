@@ -32,6 +32,88 @@ In large enterprises like ONGC, institutional knowledge is often locked within m
 - **Multi-Format Support**: Natively processes PDFs, DOCX, Excel spreadsheets, raw Images (PNG/JPG), and **Public GitHub Repositories** (clones and indexes source code).
 - **Premium ONGC-Branded Interface**: A modern, sleek Next.js App Router frontend customized with ONGC's deep maroon and gold brand colors, utilizing glassmorphism and micro-animations for a premium feel.
 
+## Architecture Diagram
+
+```mermaid
+graph TD
+    %% Frontend Layer
+    subgraph UI ["Frontend (Next.js / React)"]
+        Chat["Chat Interface"]
+        Upload["Document Upload / Management"]
+    end
+
+    %% Backend API Layer
+    subgraph Backend ["Backend API (FastAPI)"]
+        API["FastAPI App (app.main:app)"]
+        ChatRouter["Chat Route"]
+        DocRouter["Documents / Upload Route"]
+        GitRouter["GitHub Route"]
+    end
+
+    %% Processing Services
+    subgraph Ingestion ["Ingestion & Parsing Services"]
+        IngestService["Ingestion Service"]
+        PDFLoader["PDF Loader (PyMuPDF / pdfplumber)"]
+        DocxLoader["DOCX Loader"]
+        ExcelLoader["Excel Loader"]
+        GitLoader["GitHub Loader"]
+        OCR["OCR Service (Tesseract & OpenCV)"]
+    end
+
+    %% Vector Store & Storage
+    subgraph Storage ["Storage & Vector DB"]
+        Chroma["ChromaDB Vector Store (Local)"]
+        UploadsDir["Local File Uploads (/data/uploads)"]
+    end
+
+    %% RAG & AI Execution
+    subgraph AI ["Local AI Engines & Models (Ollama)"]
+        EmbedModel["nomic-embed-text"]
+        LLMModel["llama3.2:3b"]
+    end
+
+    subgraph Retrieval ["RAG Retrieval & Generation"]
+        RAGChain["RAG Chain (LangChain)"]
+        Ensemble["Ensemble Retriever"]
+        BM25["BM25 Search"]
+        VectorRetriever["Vector MMR Search"]
+        Memory["Conversational Memory"]
+    end
+
+    %% Connections
+    Chat -->|1. Natural Language Query| ChatRouter
+    Upload -->|Upload Files| DocRouter
+    Upload -->|Submit Repo URL| GitRouter
+
+    ChatRouter --> RAGChain
+    DocRouter --> Ingestion
+    GitRouter --> Ingestion
+
+    IngestService --> PDFLoader
+    IngestService --> DocxLoader
+    IngestService --> ExcelLoader
+    IngestService --> GitLoader
+
+    PDFLoader -->|Scanned Pages| OCR
+    OCR --> IngestService
+
+    IngestService -->|2. Generate Embeddings| EmbedModel
+    EmbedModel -->|3. Save Vectors| Chroma
+    IngestService -->|Store original files| UploadsDir
+
+    RAGChain --> Ensemble
+    Ensemble --> BM25
+    Ensemble --> VectorRetriever
+    VectorRetriever -->|4. Search| Chroma
+    Ensemble -->|5. Context Chunks| RAGChain
+    Memory -->|6. Load Chat History| RAGChain
+
+    RAGChain -->|7. Structured Prompt| LLMModel
+    LLMModel -->|8. Generated Grounded Answer| RAGChain
+    RAGChain -->|9. Response + Citations| ChatRouter
+    ChatRouter -->|10. Stream / Return Answer| Chat
+```
+
 ## How It Works (The Full Flow)
 
 ### 1. Ingestion Pipeline
@@ -119,3 +201,18 @@ ONGC-RAGAssistant/
 2. Install dependencies: `npm install`
 3. Start the development server: `npm run dev`
 4. Open your browser to: `http://localhost:3000`
+
+### Running with Docker Compose (Recommended)
+
+1. Make sure you have Docker and Docker Compose installed and running.
+2. Copy the environment configuration:
+   ```bash
+   copy .env.example .env
+   ```
+   *(For macOS/Linux, use `cp .env.example .env`)*
+3. Build and launch both services:
+   ```bash
+   docker compose up --build -d
+   ```
+4. Access the frontend UI at `http://localhost:3000` and the backend REST API at `http://localhost:8000`.
+5. Check service logs with `docker compose logs -f` and stop services with `docker compose down`.
