@@ -110,24 +110,47 @@ export default function ChatInterface() {
 
                 {/* Sources */}
                 {msg.sources && msg.sources.length > 0 && (
-                  <motion.div 
-                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
-                    className="flex flex-wrap gap-2 mt-1"
-                  >
-                    {msg.sources.map((source, sIdx) => (
-                      <div
-                        key={sIdx}
-                        className="flex items-center gap-1.5 px-3 py-1.5 bg-background/50 border border-border/80 text-muted-foreground rounded-full text-[11px] font-medium shadow-sm hover:border-[#F3B229]/50 hover:text-foreground transition-all cursor-default"
-                      >
-                        <FileText className="w-3 h-3 text-[#F3B229]" />
-                        <span className="truncate max-w-[150px]" title={source.filename}>
-                          {source.filename}
-                        </span>
-                        <span className="opacity-50 mx-1">•</span>
-                        <span className="text-muted-foreground font-mono text-[10px]">pg {source.page}</span>
+                  <div className="mt-2 flex flex-col gap-2">
+                    <motion.div 
+                      initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
+                      className="flex flex-wrap gap-2"
+                    >
+                      {msg.sources.map((source, sIdx) => (
+                        <div
+                          key={sIdx}
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-background/50 border border-border/80 text-muted-foreground rounded-full text-[11px] font-medium shadow-sm hover:border-[#F3B229]/50 hover:text-foreground transition-all cursor-default"
+                        >
+                          <FileText className="w-3 h-3 text-[#F3B229]" />
+                          <span className="truncate max-w-[150px]" title={source.filename}>
+                            {source.filename}
+                          </span>
+                          <span className="opacity-50 mx-1">•</span>
+                          <span className="text-muted-foreground font-mono text-[10px]">pg {source.page}</span>
+                        </div>
+                      ))}
+                    </motion.div>
+                    
+                    <details className="group">
+                      <summary className="text-[10px] text-muted-foreground hover:text-foreground cursor-pointer select-none underline underline-offset-2 w-fit">
+                        View Source Chunks
+                      </summary>
+                      <div className="mt-2 flex flex-col gap-3">
+                        {msg.sources.map((source, sIdx) => (
+                          source.chunk_text && (
+                            <div key={`chunk-${sIdx}`} className="text-[11px] bg-muted/40 p-3 rounded-md border border-border/50">
+                              <div className="font-medium text-foreground mb-1.5 flex items-center gap-1">
+                                <FileText className="w-3 h-3 text-[#F3B229]" />
+                                {source.filename} (pg {source.page})
+                              </div>
+                              <div className="text-muted-foreground whitespace-pre-wrap leading-relaxed max-h-[200px] overflow-y-auto">
+                                {source.chunk_text}
+                              </div>
+                            </div>
+                          )
+                        ))}
                       </div>
-                    ))}
-                  </motion.div>
+                    </details>
+                  </div>
                 )}
               </div>
             </motion.div>

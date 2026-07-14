@@ -10,6 +10,7 @@ class Source(BaseModel):
     repository_name: Optional[str] = None
     file_path: Optional[str] = None
     repository_url: Optional[str] = None
+    chunk_text: Optional[str] = None
 
 
 class ChatResponse(BaseModel):

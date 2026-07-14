@@ -47,7 +47,8 @@ class ChatService:
                     source_type=doc.metadata.get("source_type"),
                     repository_name=doc.metadata.get("repository_name"),
                     file_path=doc.metadata.get("file_path"),
-                    repository_url=doc.metadata.get("repository_url")
+                    repository_url=doc.metadata.get("repository_url"),
+                    chunk_text=doc.page_content
                 )
             )
 

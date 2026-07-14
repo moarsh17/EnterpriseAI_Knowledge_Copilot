@@ -8,6 +8,7 @@ export interface Source {
   repository_name?: string;
   file_path?: string;
   repository_url?: string;
+  chunk_text?: string;
 }
 
 export interface ChatResponse {

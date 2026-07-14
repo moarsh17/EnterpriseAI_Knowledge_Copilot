@@ -19,10 +19,9 @@ class UploadService:
         return extension
 
     def generate_filename(self, original_name: str):
-
-        extension = Path(original_name).suffix.lower()
-
-        return f"{uuid4()}{extension}"
+        import re
+        safe_name = re.sub(r'[^a-zA-Z0-9_\-\.]', '_', original_name)
+        return safe_name
 
     async def save_file(self, file: UploadFile) -> Path:
 
