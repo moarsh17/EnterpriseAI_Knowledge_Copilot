@@ -4,11 +4,12 @@ export interface Source {
   filename: string;
   page: number;
   chunk_index: number;
+  text?: string;
+  original_filename?: string;
   source_type?: string;
   repository_name?: string;
   file_path?: string;
   repository_url?: string;
-  chunk_text?: string;
 }
 
 export interface ChatResponse {

@@ -23,6 +23,7 @@ def list_documents():
                 unique_docs[doc_id] = {
                     "document_id": doc_id,
                     "filename": meta.get("filename", "Unknown"),
+                    "original_filename": meta.get("original_filename", meta.get("filename", "Unknown")),
                     "domain": meta.get("domain", "General"),
                     "department": meta.get("department", "General"),
                     "document_type": meta.get("document_type", "Unknown")

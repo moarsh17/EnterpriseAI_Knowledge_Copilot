@@ -16,7 +16,7 @@ ingestion_service = IngestionService()
 async def upload(file: UploadFile):
     try:
         file_path = await upload_service.save_file(file)
-        result = ingestion_service.ingest(file_path)
+        result = ingestion_service.ingest(file_path, original_filename=file.filename)
         return {
             "filename": file.filename,
             "status": "success",

@@ -232,8 +232,8 @@ export default function Sidebar() {
                   >
                     <div className="flex items-center gap-2 overflow-hidden">
                       <FileText className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-                      <span className="text-xs text-foreground truncate font-medium" title={doc.filename}>
-                        {doc.filename}
+                      <span className="text-xs text-foreground truncate font-medium" title={doc.original_filename || doc.filename}>
+                        {doc.original_filename || doc.filename}
                       </span>
                     </div>
                     <button 

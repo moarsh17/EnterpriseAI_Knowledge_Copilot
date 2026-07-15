@@ -28,7 +28,7 @@ class IngestionService:
             "excel": ExcelLoader(),
         }
 
-    def ingest(self, file_path: Path) -> dict:
+    def ingest(self, file_path: Path, original_filename: str | None = None) -> dict:
         extension = file_path.suffix.lower()
 
         if extension not in SUPPORTED_FILE_TYPES:
@@ -45,11 +45,14 @@ class IngestionService:
                 document_id=document_id,
                 filename=file_path.name,
                 document_type="PDF",
+                extra_metadata={"original_filename": original_filename} if original_filename else None,
             )
             return report
 
         # --- All other types: batch load then ingest ---
         loader = self.batch_loaders[loader_key]
         document = loader.load(file_path)
+        if original_filename:
+            document.metadata["original_filename"] = original_filename
         report = self.pipeline.ingest(document)
         return report

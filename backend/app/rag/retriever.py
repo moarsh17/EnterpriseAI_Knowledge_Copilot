@@ -21,7 +21,7 @@ class DocumentRetriever:
     ):
 
         kwargs = {
-            "k": 10,
+            "k": 4,
         }
 
         if filters:

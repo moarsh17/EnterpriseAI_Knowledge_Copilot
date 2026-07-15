@@ -1,9 +1,9 @@
 from app.models import response
-from langchain.chains import create_retrieval_chain
+from langchain.chains import create_retrieval_chain, create_history_aware_retriever
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_ollama import ChatOllama
 
-from app.rag.prompts import RAG_PROMPT
+from app.rag.prompts import RAG_PROMPT, CONTEXTUALIZE_Q_PROMPT
 from app.rag.retriever import DocumentRetriever
 from app.rag.memory import memory
 
@@ -29,13 +29,17 @@ class RAGChain:
             filters=filters,
         )
 
+        history_aware_retriever = create_history_aware_retriever(
+            self.llm, retriever, CONTEXTUALIZE_Q_PROMPT
+        )
+
         document_chain = create_stuff_documents_chain(
             self.llm,
             self.prompt,
         )
 
         chain = create_retrieval_chain(
-            retriever,
+            history_aware_retriever,
             document_chain,
         )
 

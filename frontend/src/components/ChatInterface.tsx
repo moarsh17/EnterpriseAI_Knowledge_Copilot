@@ -21,6 +21,7 @@ export default function ChatInterface() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [expandedChunk, setExpandedChunk] = useState<string | null>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -110,47 +111,50 @@ export default function ChatInterface() {
 
                 {/* Sources */}
                 {msg.sources && msg.sources.length > 0 && (
-                  <div className="mt-2 flex flex-col gap-2">
-                    <motion.div 
-                      initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
-                      className="flex flex-wrap gap-2"
-                    >
-                      {msg.sources.map((source, sIdx) => (
-                        <div
-                          key={sIdx}
-                          className="flex items-center gap-1.5 px-3 py-1.5 bg-background/50 border border-border/80 text-muted-foreground rounded-full text-[11px] font-medium shadow-sm hover:border-[#F3B229]/50 hover:text-foreground transition-all cursor-default"
-                        >
-                          <FileText className="w-3 h-3 text-[#F3B229]" />
-                          <span className="truncate max-w-[150px]" title={source.filename}>
-                            {source.filename}
-                          </span>
-                          <span className="opacity-50 mx-1">•</span>
-                          <span className="text-muted-foreground font-mono text-[10px]">pg {source.page}</span>
-                        </div>
-                      ))}
-                    </motion.div>
-                    
-                    <details className="group">
-                      <summary className="text-[10px] text-muted-foreground hover:text-foreground cursor-pointer select-none underline underline-offset-2 w-fit">
-                        View Source Chunks
-                      </summary>
-                      <div className="mt-2 flex flex-col gap-3">
-                        {msg.sources.map((source, sIdx) => (
-                          source.chunk_text && (
-                            <div key={`chunk-${sIdx}`} className="text-[11px] bg-muted/40 p-3 rounded-md border border-border/50">
-                              <div className="font-medium text-foreground mb-1.5 flex items-center gap-1">
-                                <FileText className="w-3 h-3 text-[#F3B229]" />
-                                {source.filename} (pg {source.page})
-                              </div>
-                              <div className="text-muted-foreground whitespace-pre-wrap leading-relaxed max-h-[200px] overflow-y-auto">
-                                {source.chunk_text}
-                              </div>
-                            </div>
-                          )
-                        ))}
-                      </div>
-                    </details>
-                  </div>
+                  <motion.div 
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
+                    className="flex flex-col gap-2 mt-1 w-full"
+                  >
+                    <div className="flex flex-wrap gap-2">
+                      {msg.sources.map((source, sIdx) => {
+                        const chunkId = `${idx}-${sIdx}`;
+                        const isExpanded = expandedChunk === chunkId;
+                        return (
+                          <button
+                            key={sIdx}
+                            onClick={() => setExpandedChunk(isExpanded ? null : chunkId)}
+                            className={`flex items-center gap-1.5 px-3 py-1.5 bg-background/50 border ${isExpanded ? 'border-[#F3B229]' : 'border-border/80'} text-muted-foreground rounded-full text-[11px] font-medium shadow-sm hover:border-[#F3B229]/50 hover:text-foreground transition-all`}
+                          >
+                            <FileText className="w-3 h-3 text-[#F3B229]" />
+                            <span className="truncate max-w-[150px]" title={source.original_filename || source.filename}>
+                              {source.original_filename || source.filename}
+                            </span>
+                            <span className="opacity-50 mx-1">•</span>
+                            <span className="text-muted-foreground font-mono text-[10px]">pg {source.page}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                    {/* Render expanded chunk text if any matches this message */}
+                    {msg.sources.map((source, sIdx) => {
+                       const chunkId = `${idx}-${sIdx}`;
+                       if (expandedChunk !== chunkId || !source.text) return null;
+                       return (
+                         <motion.div 
+                           key={`text-${sIdx}`}
+                           initial={{ opacity: 0, height: 0 }}
+                           animate={{ opacity: 1, height: 'auto' }}
+                           className="mt-2 p-3 bg-muted/30 border border-border/50 rounded-lg text-[11px] font-mono text-muted-foreground/90 whitespace-pre-wrap overflow-x-auto text-left"
+                         >
+                           <div className="flex justify-between items-center mb-2 pb-1 border-b border-border/50 text-[#F3B229]">
+                             <span>Excerpt from Page {source.page}</span>
+                             <button onClick={() => setExpandedChunk(null)} className="hover:text-foreground transition-colors">✕</button>
+                           </div>
+                           {source.text}
+                         </motion.div>
+                       );
+                    })}
+                  </motion.div>
                 )}
               </div>
             </motion.div>

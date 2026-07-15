@@ -44,11 +44,12 @@ class ChatService:
                     filename=doc.metadata.get("filename", ""),
                     page=doc.metadata.get("page", 1),
                     chunk_index=doc.metadata.get("chunk_index", 0),
+                    text=doc.page_content,
+                    original_filename=doc.metadata.get("original_filename"),
                     source_type=doc.metadata.get("source_type"),
                     repository_name=doc.metadata.get("repository_name"),
                     file_path=doc.metadata.get("file_path"),
-                    repository_url=doc.metadata.get("repository_url"),
-                    chunk_text=doc.page_content
+                    repository_url=doc.metadata.get("repository_url")
                 )
             )
 
