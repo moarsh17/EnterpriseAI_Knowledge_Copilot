@@ -57,8 +57,20 @@ class GithubService:
         if target_dir.exists():
             shutil.rmtree(target_dir, ignore_errors=True)
             
-        from app.rag.memory import memory
-        memory.clear()
+        from app.rag.memory import clear_memory
+        clear_memory()
+
+    def sync_repo(self, repo_id: str) -> dict:
+        docs = self.vectorstore.get(where={"document_id": repo_id})
+        metadatas = docs.get("metadatas", [])
+        if not metadatas:
+            raise ValueError("Repository not found")
+            
+        repo_url = metadatas[0].get("repository_url")
+        if not repo_url:
+            raise ValueError("Repository URL missing in metadata")
+            
+        return self.ingest_repo(repo_url)
 
     def get_indexed_repos(self) -> list[dict]:
         docs = self.vectorstore.get(where={"source_type": "github"})

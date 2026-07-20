@@ -62,6 +62,17 @@ export const api = {
     return res.json();
   },
 
+  clearChat: async (): Promise<any> => {
+    const res = await fetch(`${BASE_URL}/chat/memory`, {
+      method: "DELETE",
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || "Failed to clear chat memory");
+    }
+    return res.json();
+  },
+
   getDocuments: async (): Promise<any> => {
     const res = await fetch(`${BASE_URL}/documents/`);
     if (!res.ok) {
@@ -113,6 +124,17 @@ export const api = {
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
       throw new Error(err.detail || "Failed to delete repository");
+    }
+    return res.json();
+  },
+
+  syncGithubRepo: async (repoId: string): Promise<any> => {
+    const res = await fetch(`${BASE_URL}/github/${repoId}/sync`, {
+      method: "POST",
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || "Failed to sync repository");
     }
     return res.json();
   },

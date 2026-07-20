@@ -176,7 +176,16 @@ class RAGIngestionPipeline:
 
         for i, chunk_text in enumerate(chunks):
             meta = {**base_metadata, "chunk_index": i}
-            lc_docs.append(LangchainDocument(page_content=chunk_text, metadata=meta))
+            
+            source_type = meta.get("source_type", "")
+            if source_type == "github":
+                file_path = meta.get("file_path", meta.get("filename", ""))
+                repo_url = meta.get("repository_url", "")
+                enriched_text = f"[Source File: {file_path}]\n[Repository: {repo_url}]\n\n{chunk_text}"
+            else:
+                enriched_text = chunk_text
+                
+            lc_docs.append(LangchainDocument(page_content=enriched_text, metadata=meta))
 
         if lc_docs:
             self.vectorstore.add_documents(lc_docs)

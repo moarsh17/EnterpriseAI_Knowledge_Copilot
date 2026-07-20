@@ -35,3 +35,13 @@ def delete_repo(repo_id: str):
         return {"status": "success", "message": f"Repository {repo_id} deleted."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/{repo_id}/sync")
+def sync_repo(repo_id: str):
+    try:
+        report = service.sync_repo(repo_id)
+        return {"status": "success", "details": report}
+    except ValueError as ve:
+        raise HTTPException(status_code=404, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

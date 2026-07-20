@@ -2,6 +2,7 @@ from fastapi import APIRouter
 
 from app.models.chat import ChatResponse
 from app.services.chat_service import ChatService
+from app.rag.memory import clear_memory
 
 router = APIRouter(
     prefix="/api/v1/chat",
@@ -9,6 +10,12 @@ router = APIRouter(
 )
 
 service = ChatService()
+
+
+@router.delete("/memory")
+def clear_chat_memory():
+    clear_memory()
+    return {"status": "success", "message": "Chat memory cleared successfully."}
 
 
 @router.get("/", response_model=ChatResponse)

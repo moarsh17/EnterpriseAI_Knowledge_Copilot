@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { api } from "@/services/api";
-import { UploadCloud, CheckCircle, AlertCircle, FileText, BookOpen, Trash2, Loader2, Sun, Moon, Globe } from "lucide-react";
+import { UploadCloud, CheckCircle, AlertCircle, FileText, BookOpen, Trash2, Loader2, Sun, Moon, Globe, RefreshCw } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "next-themes";
 
@@ -18,6 +18,7 @@ export default function Sidebar() {
   const [ingestingGithub, setIngestingGithub] = useState(false);
   const [githubRepos, setGithubRepos] = useState<any[]>([]);
   const [loadingRepos, setLoadingRepos] = useState(true);
+  const [syncingRepoId, setSyncingRepoId] = useState<string | null>(null);
 
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -108,6 +109,18 @@ export default function Sidebar() {
       fetchGithubRepos();
     } catch (error) {
       console.error("Failed to delete repo:", error);
+    }
+  };
+
+  const handleSyncRepo = async (repoId: string) => {
+    setSyncingRepoId(repoId);
+    try {
+      await api.syncGithubRepo(repoId);
+      fetchGithubRepos();
+    } catch (error: any) {
+      alert(error.message || "Failed to sync repository");
+    } finally {
+      setSyncingRepoId(null);
     }
   };
 
@@ -260,13 +273,27 @@ export default function Sidebar() {
                         {repo.repository_name}
                       </span>
                     </div>
-                    <button 
-                      onClick={() => handleDeleteRepo(repo.document_id)}
-                      className="p-1.5 text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 rounded-md transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
-                      title="Remove repository"
-                    >
-                      <Trash2 className="w-3 h-3" />
-                    </button>
+                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
+                      <button 
+                        onClick={() => handleSyncRepo(repo.document_id)}
+                        disabled={syncingRepoId === repo.document_id}
+                        className="p-1.5 text-muted-foreground hover:text-emerald-500 hover:bg-emerald-500/10 rounded-md transition-colors disabled:opacity-50"
+                        title="Sync repository"
+                      >
+                        {syncingRepoId === repo.document_id ? (
+                          <Loader2 className="w-3 h-3 animate-spin text-emerald-500" />
+                        ) : (
+                          <RefreshCw className="w-3 h-3" />
+                        )}
+                      </button>
+                      <button 
+                        onClick={() => handleDeleteRepo(repo.document_id)}
+                        className="p-1.5 text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 rounded-md transition-colors"
+                        title="Remove repository"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    </div>
                   </motion.div>
                 ))}
               </AnimatePresence>

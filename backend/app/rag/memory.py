@@ -1,7 +1,11 @@
-from langchain.memory import ConversationBufferMemory
+from langchain.memory import ConversationBufferWindowMemory
 
 
-memory = ConversationBufferMemory(
+memory = ConversationBufferWindowMemory(
     memory_key="chat_history",
     return_messages=True,
+    k=5
 )
+
+def clear_memory():
+    memory.clear()

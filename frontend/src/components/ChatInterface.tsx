@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { api, ChatResponse } from "@/services/api";
-import { Send, User, Bot, FileText, Loader2 } from "lucide-react";
+import { Send, User, Bot, FileText, Loader2, Eraser } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface Message {
@@ -30,6 +30,20 @@ export default function ChatInterface() {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  const handleClearChat = async () => {
+    try {
+      await api.clearChat();
+      setMessages([
+        {
+          role: "assistant",
+          content: "Chat memory cleared! How can I help you next?",
+        },
+      ]);
+    } catch (error) {
+      console.error("Failed to clear chat memory", error);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,21 +74,26 @@ export default function ChatInterface() {
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-background relative overflow-hidden">
-      {/* Decorative background blob */}
-      <div className="absolute top-[-10%] left-[10%] w-[40rem] h-[40rem] bg-[#C00F2E]/5 rounded-full blur-[100px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[10%] w-[40rem] h-[40rem] bg-[#F3B229]/5 rounded-full blur-[100px] pointer-events-none" />
+    <div className="flex-1 flex flex-col h-full bg-black relative overflow-hidden">
 
       {/* Header */}
-      <header className="px-8 py-5 border-b border-border/50 glass z-10 flex items-center justify-between">
+      <header className="px-8 py-5 border-b border-white/10 bg-black z-10 flex items-center justify-between shrink-0">
         <div>
           <h2 className="text-lg font-medium text-foreground tracking-tight">Assistant Chat</h2>
           <p className="text-[11px] text-muted-foreground uppercase tracking-widest mt-1">Query the ONGC knowledge base</p>
         </div>
+        <button
+          onClick={handleClearChat}
+          className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border bg-muted/50 hover:bg-muted text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+          title="Clear Chat History"
+        >
+          <Eraser className="w-3.5 h-3.5" />
+          Clear Chat
+        </button>
       </header>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-8 z-10 flex flex-col gap-8 scroll-smooth">
+      <div className="flex-1 overflow-y-auto p-8 pb-8 z-10 flex flex-col gap-8 scroll-smooth">
         <AnimatePresence initial={false}>
           {messages.map((msg, idx) => (
             <motion.div
@@ -100,7 +119,7 @@ export default function ChatInterface() {
               {/* Content box */}
               <div className={`flex flex-col gap-3 ${msg.role === "user" ? "items-end" : "items-start"}`}>
                 <div
-                  className={`px-5 py-4 rounded-2xl shadow-sm text-[15px] leading-relaxed ${
+                  className={`px-5 py-4 rounded-2xl shadow-sm text-[15px] leading-relaxed whitespace-pre-wrap ${
                     msg.role === "user"
                       ? "bg-foreground text-background rounded-tr-sm"
                       : "bg-muted/50 text-foreground rounded-tl-sm border border-border/50 backdrop-blur-md"
@@ -182,29 +201,29 @@ export default function ChatInterface() {
       </div>
 
       {/* Input Area */}
-      <div className="p-6 bg-gradient-to-t from-background via-background/95 to-transparent z-10">
-        <div className="max-w-3xl mx-auto relative">
+      <div className="shrink-0 px-6 pt-4 pb-4 bg-black z-10">
+        <div className="max-w-3xl mx-auto">
           <form
             onSubmit={handleSubmit}
-            className="flex items-center gap-2 p-1.5 bg-background/80 backdrop-blur-xl border border-border/80 rounded-full shadow-lg focus-within:ring-1 focus-within:ring-[#C00F2E]/30 focus-within:border-[#C00F2E]/50 transition-all"
+            className="flex items-center gap-2 p-1.5 bg-white/5 border border-white/10 rounded-full shadow-lg focus-within:ring-1 focus-within:ring-[#C00F2E]/30 focus-within:border-[#C00F2E]/50 transition-all"
           >
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask anything about the documents..."
-              className="flex-1 bg-transparent px-5 py-2.5 outline-none text-[15px] text-foreground placeholder:text-muted-foreground/70"
+              className="flex-1 bg-transparent px-5 py-2.5 outline-none text-[15px] text-white placeholder:text-white/40"
               disabled={loading}
             />
             <button
               type="submit"
               disabled={!input.trim() || loading}
-              className="w-11 h-11 rounded-full bg-foreground hover:bg-foreground/90 text-background flex items-center justify-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
+              className="w-11 h-11 rounded-full bg-white hover:bg-white/90 text-black flex items-center justify-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
             >
               <Send className="w-4 h-4 ml-0.5" />
             </button>
           </form>
-          <div className="text-center mt-4 text-[10px] text-muted-foreground uppercase tracking-widest font-medium">
+          <div className="text-center mt-2 text-[9px] text-white/30 uppercase tracking-widest font-medium">
             AI can make mistakes. Verify critical ONGC information.
           </div>
         </div>
