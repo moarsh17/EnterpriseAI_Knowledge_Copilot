@@ -1,6 +1,6 @@
 # Enterprise AI Knowledge Copilot
 
-Enterprise AI Knowledge Copilot is a Retrieval-Augmented Generation (RAG) system built to help an organisation personnel securely interact with massive enterprise documents. It allows users to upload, manage, and query a variety of complex documents, providing highly accurate, cited answers powered by Large Language Models.
+Enterprise AI Knowledge Copilot is a fully localized Retrieval-Augmented Generation (RAG) system built to help an organisation personnel securely interact with massive enterprise documents. It allows users to upload, manage, and query a variety of complex documents, providing highly accurate, cited answers powered by Large Language Models.
 
 ## Why Use This Instead of ChatGPT?
 
