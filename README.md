@@ -1,10 +1,10 @@
-# ONGC Enterprise AI Knowledge Copilot
+# Enterprise AI Knowledge Copilot
 
-The ONGC Enterprise AI Knowledge Copilot is a state-of-the-art Retrieval-Augmented Generation (RAG) system built to help ONGC personnel securely interact with massive enterprise documents. It allows users to upload, manage, and query a variety of complex documents, providing highly accurate, cited answers powered by Large Language Models.
+Enterprise AI Knowledge Copilot is a Retrieval-Augmented Generation (RAG) system built to help an organisation personnel securely interact with massive enterprise documents. It allows users to upload, manage, and query a variety of complex documents, providing highly accurate, cited answers powered by Large Language Models.
 
 ## Why Use This Instead of ChatGPT?
 
-For enterprise environments like ONGC, data sensitivity is paramount. Uploading proprietary engineering diagrams, confidential exploration reports, and internal policy documents to public AI models like ChatGPT exposes the organization to severe data privacy risks and potential compliance breaches. 
+For enterprise environments, data sensitivity is paramount. Uploading proprietary engineering diagrams, confidential exploration reports, and internal policy documents to public AI models like ChatGPT exposes the organization to severe data privacy risks and potential compliance breaches. 
 
 **This Knowledge Copilot is designed specifically to solve this problem:**
 
